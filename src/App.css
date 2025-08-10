@@ -1,38 +1,134 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+* {box-sizing: border-box;}
+.kundli {background-color: #fbebcc; margin: -40px 0; overflow: hidden;  border: 1px solid #62394e; position: relative; border-radius: 20px; width: 700px; height: 700px; transform: scale(0.8); }
+.kundli .center_houses {
+  /* background-color: #eee; */
+  transform: rotate(45deg);
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  flex-wrap: wrap;
+  position: absolute;
+  left: 0px;
+  top: 0;
+  margin-left: 12.5%;
+  margin-top: 12.5%;
+  border-radius: 12px;
+  height: 75%;
+  width: 75%;
 }
 
-.App-link {
-  color: #61dafb;
+.kundli .center_houses .center_4 {box-sizing: border-box; width: 50%; border: 0.5px solid #de7b34; height: 50%; display: flex; justify-content: center; align-items: center;}
+.kundli .center_houses .inner {transform: rotate(-45deg);}
+
+.kundli .corner_house {display: flex; flex-direction: column; width: 35%; height: 70%; flex-wrap: wrap; position: absolute;}
+.kundli .corner_house.topLeft { transform: rotate(45deg); margin: 6.2%; top: -30%; left: -12.5%;}
+.kundli .corner_house.topRight {transform: rotate(135deg); margin: 6.2%; top: -30%; right: -12.5%;}
+.kundli .corner_house.topLeft .inner {transform: rotate(-45deg);}
+.kundli .corner_house.topRight .inner {transform: rotate(-135deg);}
+
+.kundli .corner_house.bottomLeft { transform: rotate(135deg); margin: 6.2%; bottom: -30%; left: -12.5%;}
+.kundli .corner_house.bottomRight {transform: rotate(45deg); margin: 6.2%; bottom: -30%; right: -12.5%;}
+.kundli .corner_house.bottomLeft .inner {transform: rotate(-135deg);}
+.kundli .corner_house.bottomRight .inner {transform: rotate(-45deg);}
+
+.kundli .corner_house .houses {flex: 1; border: 1px solid #de7b34; display: flex; justify-content: center; align-items: center;}
+.kundli .houses:hover {background: #ffe5b4;}
+.kundli .data {text-align: center;}
+.kundli .topHouse .data{margin-top: 150px;}
+.kundli .bottomHouse .data{margin-bottom: 150px;}
+.kundli .leftHouse .data{margin-left: 150px;}
+.kundli .rightHouse .data{margin-right: 150px;}
+.kundli .data .house_num {font-size:12px; color: #ac8842; margin: auto; margin-top: 16px; width: 24px; border-radius: 100%; line-height: 24px; background: #f2deb5; height: 24px;}
+.kundli .data .rashi {font-size: 16px; font-weight: bold;}
+.kundli .data .planets {font-size: 12px;}
+.kundli .houses {text-decoration: none; color: #333333;}
+.chart {display: flex;}
+.chart .planet_grids {display: grid; width: 500px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.chart .planet_grids .list {
+  font-size: 12px;
+  display: flex; flex-direction: column;
+  background-color: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 8px 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);}
+
+  .chart .planet_grids .list .items {display: flex; justify-content: space-between; align-items: center;}
+  .chart .planet_grids .list .items .icon{width: 8px;}
+  .chart .planet_grids .list .items .icon.down{width: 8px; transform: rotate(180deg);}
+
+table .icon{width: 8px;}
+table .icon.down{width: 8px; transform: rotate(180deg);}
+
+/* table design */
+
+.container {width: 100%; max-width: 1280px; margin: 0 auto;}
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 40px;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Header cells */
+th {
+  background-color: #f3f4f6;
+  color: #111827;
+  font-weight: 600;
+  padding: 8px;
+  font-size: 12px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+/* Data cells */
+td {
+  padding: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  font-size: 12px;
+  color: #333333;
+  vertical-align: top;
+  line-height: 1.5;
+  transition: background-color 0.3s ease;
+}
+
+/* Row hover effect */
+tr:hover td {
+  background-color: #f0f7ff;
+}
+
+/* Even/odd row styling (optional) */
+tr:nth-child(even) td {
+  background-color: #fafafa;
+}
+
+/* Optional: rounded corners (if desired on first/last cell) */
+tr:first-child th:first-child {
+  border-top-left-radius: 8px;
+}
+tr:first-child th:last-child {
+  border-top-right-radius: 8px;
+}
+tr:last-child td:first-child {
+  border-bottom-left-radius: 8px;
+}
+tr:last-child td:last-child {
+  border-bottom-right-radius: 8px;
+}
+
+/* Caption styling */
+caption {
+  caption-side: top;
+  padding: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #374151;
 }

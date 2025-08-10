@@ -1,10 +1,10 @@
 // App.js
 import React, { forwardRef, useState } from "react";
-import { AppBar, Box, Toolbar, IconButton, Menu, MenuItem, Typography, Container } from "@mui/material";
 import { BrowserRouter as Router, Routes, Route, Link as RouterLink} from "react-router-dom";
-import Navbar from "./screens/navbar";
-import PublicRoutes from "./screens/routes";
-import './App.css';
+import Home from "../home";
+import Charts from "../charts";
+import Learning from "../learning";
+
 
 
 const LinkRouter = forwardRef(function LinkRouter(itemProps, ref) {
@@ -19,7 +19,7 @@ const LinkRouter = forwardRef(function LinkRouter(itemProps, ref) {
     { label: "Info", path: "/info" }
   ];
 
-function App() {
+function PublicRoutes() {
   const [anchorElNav, setAnchorElNav] = useState(null);
 
   const handleOpenNavMenu = (event) => {
@@ -32,11 +32,14 @@ function App() {
 
 
   return (
-    <Router>
-      <Navbar/>
-      <PublicRoutes/>
-    </Router>
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/charts" element={<Charts />} />
+        <Route path="/learning" element={<Learning />} />
+      </Routes>
+    </>
   );
 }
 
-export default App;
+export default PublicRoutes;
