@@ -1,7 +1,7 @@
 // PlanetStrengthTable.jsx
 import React from "react";
 import planets from "../../data/planets";
-import planetHouseSymptoms from "../../data/planetSymptoms"; // Ensure keys match lowercased names
+import planetHouseSymptoms from "../../data/planetSymptoms";
 import {
   Accordion,
   AccordionSummary,
@@ -40,33 +40,6 @@ const PLANET_RELATIONS = {
 const BENEFIC_PLANETS = [5, 6, 4, 2];
 const MALEFIC_PLANETS = [7, 3, 8, 9, 1, 2];
 
-// ---------- Utility ----------
-const getRashiName = (no) => RASHIS[no - 1] || "Unknown";
-const getPlanetByNo = (no) => planets.find(p => p.no === no);
-const isDegreeClose = (deg1, deg2, threshold = 3) => Math.abs(deg1 - deg2) <= threshold;
-
-const isNeechbhang = (planet, rashiNo, kundli) => {
-  const planetData = getPlanetByNo(planet.no);
-  if (!planetData?.debilitated_in) return false;
-  if (getRashiName(rashiNo) !== planetData.debilitated_in.sign) return false;
-
-  const lordNo = RASHI_LORDS[rashiNo];
-  const lordHouse = kundli.houses.find(h => h.planets.some(p => p.no === lordNo));
-  return lordHouse && [1, 4, 7, 10].includes(lordHouse.house);
-};
-
-const getAspectImpact = (planet, houseNo, aspects) => {
-  let impact = 0;
-  aspects.forEach(a => {
-    if (a.house_aspected === houseNo && a.planet_no !== planet.no) {
-      if (BENEFIC_PLANETS.includes(a.planet_no)) impact++;
-      if (MALEFIC_PLANETS.includes(a.planet_no)) impact--;
-    }
-  });
-  return impact;
-};
-
-// ---------- Icon & Styles ----------
 const strengthIcons = {
   uchch: "🟢",
   neech: "🔴",
@@ -103,17 +76,51 @@ const effectStyles = {
   unknown: { color: "gray" },
 };
 
+// ---------- Utility ----------
+const getRashiName = (no) => RASHIS[no - 1] || "Unknown";
+const getPlanetByNo = (no) => planets.find((p) => p.no === no);
+const isDegreeClose = (d1, d2, t = 3) => Math.abs(d1 - d2) <= t;
+
+const isNeechbhang = (planet, rashiNo, kundli) => {
+  const planetData = getPlanetByNo(planet.no);
+  if (!planetData?.debilitated_in) return false;
+  if (getRashiName(rashiNo) !== planetData.debilitated_in.sign) return false;
+  const lordNo = RASHI_LORDS[rashiNo];
+  const lordHouse = kundli.houses.find((h) =>
+    h.planets.some((p) => p.no === lordNo)
+  );
+  return lordHouse && [1, 4, 7, 10].includes(lordHouse.house);
+};
+
+const getAspectImpact = (planet, houseNo, aspects) => {
+  let impact = 0;
+  aspects.forEach((a) => {
+    if (a.house_aspected === houseNo && a.planet_no !== planet.no) {
+      if (BENEFIC_PLANETS.includes(a.planet_no)) impact++;
+      if (MALEFIC_PLANETS.includes(a.planet_no)) impact--;
+    }
+  });
+  return impact;
+};
+
 // ---------- Logic ----------
 function evaluatePlanetStrength(planet, rashiNo, houseNo, kundli, aspects) {
   const planetData = getPlanetByNo(planet.no);
-  if (!planetData) return {
-    strengthKey: "unknown", strengthLabel: "Unknown", strengthReason: "Planet metadata missing",
-    effectKey: "unknown", effectLabel: "Unknown", effectReason: "Planet metadata missing",
-    degree: planet.degInSign ?? null
-  };
+  if (!planetData)
+    return {
+      strengthKey: "unknown",
+      strengthLabel: "Unknown",
+      strengthReason: "Planet metadata missing",
+      effectKey: "unknown",
+      effectLabel: "Unknown",
+      effectReason: "Planet metadata missing",
+      degree: planet.degInSign ?? null,
+    };
 
   const rashiName = getRashiName(rashiNo);
-  const degInSign = Number.isFinite(planet.degInSign) ? planet.degInSign : (planet.deg ?? planet.degree ?? null);
+  const degInSign = Number.isFinite(planet.degInSign)
+    ? planet.degInSign
+    : planet.deg ?? planet.degree ?? null;
 
   const isExalted = planetData.exalted_in?.sign === rashiName;
   const isDebilitated = planetData.debilitated_in?.sign === rashiName;
@@ -129,8 +136,7 @@ function evaluatePlanetStrength(planet, rashiNo, houseNo, kundli, aspects) {
     strengthReason = `Exalted in ${rashiName} (${degInSign?.toFixed(2)}°)`;
     effectKey = "positive";
     effectReason = "Exalted planets give strong positive results.";
-    const exaltDeg = planetData.exalted_in?.degree;
-    if (isDegreeClose(degInSign, exaltDeg)) {
+    if (isDegreeClose(degInSign, planetData.exalted_in?.degree)) {
       strengthReason += " Near exact exaltation point → stronger influence.";
       effectReason += " Very strong influence due to close degree.";
     }
@@ -145,8 +151,7 @@ function evaluatePlanetStrength(planet, rashiNo, houseNo, kundli, aspects) {
       strengthReason = `Debilitated in ${rashiName} (${degInSign?.toFixed(2)}°)`;
       effectKey = "negative";
       effectReason = "Debilitated planets give weaker/negative results.";
-      const debilDeg = planetData.debilitated_in?.degree;
-      if (isDegreeClose(degInSign, debilDeg)) {
+      if (isDegreeClose(degInSign, planetData.debilitated_in?.degree)) {
         strengthReason += " Near deep debilitation point → extra weakness.";
         effectReason += " Extra weakness due to close degree.";
       }
@@ -168,7 +173,6 @@ function evaluatePlanetStrength(planet, rashiNo, houseNo, kundli, aspects) {
     }
   }
 
-  // Aspect influence modifies effect:
   const aspectImpact = getAspectImpact(planet, houseNo, aspects);
   if (aspectImpact > 0) {
     effectReason += " Benefic aspects provide support.";
@@ -184,14 +188,91 @@ function evaluatePlanetStrength(planet, rashiNo, houseNo, kundli, aspects) {
 
   return {
     strengthKey,
-    strengthLabel: `${strengthIcons[strengthKey]} ${strengthKey.charAt(0).toUpperCase() + strengthKey.slice(1)}`,
+    strengthLabel: `${strengthIcons[strengthKey]} ${
+      strengthKey.charAt(0).toUpperCase() + strengthKey.slice(1)
+    }`,
     strengthReason,
     effectKey,
-    effectLabel: `${effectIcons[effectKey]} ${effectKey.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}`,
+    effectLabel: `${effectIcons[effectKey]} ${effectKey
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (l) => l.toUpperCase())}`,
     effectReason,
-    degree: degInSign
+    degree: degInSign,
   };
 }
+
+// ---------- Helper to Render Symptoms ----------
+const renderSymptoms = (planetNo, house, effectKey) => {
+  const match = planetHouseSymptoms.find((p) => p.planet_no === planetNo);
+  if (!match) return null;
+  const symptomData = match.symptoms.find((s) => s.no === house);
+  if (!symptomData) return null;
+
+  let keyList = [];
+  if (["positive", "mild_positive"].includes(effectKey)) {
+    keyList = symptomData.positive || [];
+  } else if (["negative", "mild_negative"].includes(effectKey)) {
+    keyList = symptomData.negative || [];
+  } else if (effectKey === "neutral") {
+    keyList = symptomData.neutral || [];
+  }
+
+  return keyList.map((txt, idx) => (
+    <li key={`${house}-${idx}`}>
+      <Typography>{txt}</Typography>
+    </li>
+  ));
+};
+
+
+// Helper to render remedies only when negative or mild_negative
+const renderRemedies = (planetNo, house, effectKey) => {
+  if (!["negative", "mild_negative", "neutral"].includes(effectKey)) return null; // show only for negatives
+
+  const match = planetHouseSymptoms.find((p) => p.planet_no === planetNo);
+  if (!match) return null;
+  const symptomData = match.symptoms.find((s) => s.no === house);
+  if (!symptomData || !symptomData.remedies) return null;
+
+  return symptomData.remedies.map((txt, idx) => (
+    <li key={`remedy-${house}-${idx}`}>
+      <Typography>{txt}</Typography>
+    </li>
+  ));
+};
+
+// Helper to render remedies only when negative or mild_negative
+const renderHobbies = (planetNo, house, effectKey) => {
+
+  const match = planetHouseSymptoms.find((p) => p.planet_no === planetNo);
+  if (!match) return null;
+  const symptomData = match.symptoms.find((s) => s.no === house);
+  if (!symptomData || !symptomData.hobbies) return null;
+
+  return symptomData.hobbies.map((txt, idx) => (
+    <li key={`hobbies-${house}-${idx}`}>
+      <Typography>{txt}</Typography>
+    </li>
+  ));
+};
+
+// Helper to render remedies only when negative or mild_negative
+const renderCareer = (planetNo, house, effectKey) => {
+  // if (["negative", "mild_negative"].includes(effectKey)) return null;
+
+  const match = planetHouseSymptoms.find((p) => p.planet_no === planetNo);
+  if (!match) return null;
+  const symptomData = match.symptoms.find((s) => s.no === house);
+  if (!symptomData || !symptomData.career) return null;
+
+  return symptomData.career.map((txt, idx) => (
+    <li key={`career-${house}-${idx}`}>
+      <Typography>{txt}</Typography>
+    </li>
+  ));
+};
+
+
 
 // ---------- Component ----------
 const PlanetStrengthTable = ({ kundliData = { houses: [] }, aspects = [] }) => {
@@ -199,37 +280,27 @@ const PlanetStrengthTable = ({ kundliData = { houses: [] }, aspects = [] }) => {
   if (!houses.length) return <p>No kundli data to display.</p>;
 
   const rows = houses.flatMap(({ rashi, house: houseNo, planets = [] }) =>
-    planets.map((planet) => {
-      const planetMeta = getPlanetByNo(planet.no);
-      if (!planetMeta) return null;
-
-      const evalRes = evaluatePlanetStrength(planet, rashi, houseNo, kundliData, aspects);
-
-      // FIX: Normalize keys for lookup
-      const planetKey = planetMeta.name?.trim().toLowerCase();
-      const symptomsData = planetHouseSymptoms[planetKey]?.[String(houseNo)];
-
-      let symptoms = [];
-      if (symptomsData) {
-        if (["positive", "mild_positive"].includes(evalRes.effectKey)) {
-          symptoms = symptomsData.positive || [];
-        } else if (["negative", "mild_negative"].includes(evalRes.effectKey)) {
-          symptoms = symptomsData.negative || [];
-        } else {
-          symptoms = symptomsData.neutral || [];
-        }
-      }
-
-      return {
-        planetNo: planetMeta.no,
-        planetName: planetMeta.name,
-        degree: evalRes.degree,
-        house: houseNo,
-        rashi: getRashiName(rashi),
-        ...evalRes,
-        symptoms,
-      };
-    }).filter(Boolean)
+    planets
+      .map((planet) => {
+        const meta = getPlanetByNo(planet.no);
+        if (!meta) return null;
+        const evalRes = evaluatePlanetStrength(
+          planet,
+          rashi,
+          houseNo,
+          kundliData,
+          aspects
+        );
+        return {
+          planetNo: meta.no,
+          planetName: meta.name,
+          degree: evalRes.degree,
+          house: houseNo,
+          rashi: getRashiName(rashi),
+          ...evalRes,
+        };
+      })
+      .filter(Boolean)
   );
 
   return (
@@ -238,15 +309,18 @@ const PlanetStrengthTable = ({ kundliData = { houses: [] }, aspects = [] }) => {
         <Accordion key={i}>
           <AccordionSummary
             expandIcon={"+"}
-            aria-controls={`panel-content-${i}`}
-            id={`panel-header-${i}`}
-            sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 2,
+              alignItems: "center",
+            }}
           >
-            <Typography sx={{ flexBasis: "20%", flexShrink: 0, fontWeight: "bold" }}>
+            <Typography sx={{ flexBasis: "20%", fontWeight: "bold" }}>
               {r.planetName}
             </Typography>
             <Typography sx={{ color: "text.secondary", flexBasis: "15%" }}>
-              Degree: {typeof r.degree === "number" ? r.degree.toFixed(2) + "°" : "-"}
+              Degree: {typeof r.degree === "number" ? `${r.degree.toFixed(2)}°` : "-"}
             </Typography>
             <Typography sx={{ color: "text.secondary", flexBasis: "20%" }}>
               House: {r.house}, Rashi: {r.rashi}
@@ -259,7 +333,7 @@ const PlanetStrengthTable = ({ kundliData = { houses: [] }, aspects = [] }) => {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Table size="small" aria-label="planet details">
+            <Table size="small">
               <TableBody>
                 <TableRow>
                   <TableCell><strong>Strength</strong></TableCell>
@@ -276,33 +350,26 @@ const PlanetStrengthTable = ({ kundliData = { houses: [] }, aspects = [] }) => {
                 <TableRow>
                   <TableCell><strong>Effect Reason & Symptoms</strong></TableCell>
                   <TableCell>
-                  {/* <b>{r.planetNo}</b> */}
-                  <ul>
-                    {planetHouseSymptoms
-                      .filter(e => e.planet_no === r.planetNo) // Planet match
-                      .map(e =>
-                        e.symptoms
-                          .filter(symptom => symptom.no === r.house) // House match
-                          .flatMap(symptom =>
-                            ["positive", "mild_positive"].includes(r.effectKey)
-                              ? symptom.positive.map((pos, i) => (
-                                  <li key={`pos-${symptom.no}-${i}`}>
-                                    <Typography>{pos}</Typography>
-                                  </li>
-                                ))
-                              : ["negative", "mild_negative"].includes(r.effectKey)
-                              ? symptom.negative.map((neg, i) => (
-                                  <li key={`neg-${symptom.no}-${i}`}>
-                                    <Typography>{neg}</Typography>
-                                  </li>
-                                ))
-                              : [] // Neutral ya kuch aur
-                          )
-                      )}
-                  </ul>
-
-
-                </TableCell>
+                    <ul>{renderSymptoms(r.planetNo, r.house, r.effectKey)}</ul>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell><strong>Remedies</strong></TableCell>
+                  <TableCell>
+                    <ul>{renderRemedies(r.planetNo, r.house, r.effectKey)}</ul>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell><strong>Hobbies</strong></TableCell>
+                  <TableCell>
+                    <ul>{renderHobbies(r.planetNo, r.house, r.effectKey)}</ul>
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell><strong>Career</strong></TableCell>
+                  <TableCell>
+                    <ul>{renderCareer(r.planetNo, r.house, r.effectKey)}</ul>
+                  </TableCell>
                 </TableRow>
               </TableBody>
             </Table>

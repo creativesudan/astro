@@ -1,9 +1,12 @@
 import React from 'react'
+import CreateKundli from './create'
+import KundliList from './kundli_list'
 
 function Home() {
   return (
     <div>
-        Home
+        <CreateKundli/>
+        <KundliList/>
     </div>
   )
 }

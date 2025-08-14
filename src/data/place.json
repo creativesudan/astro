@@ -1,0 +1,9 @@
+[
+    { "city": "New Delhi", "state": "Delhi", "lat": 28.613939, "lon": 77.209023 },
+    { "city": "Mumbai", "state": "Maharashtra", "lat": 19.07609, "lon": 72.877426 },
+    { "city": "Kolkata", "state": "West Bengal", "lat": 22.572646, "lon": 88.363895 },
+    { "city": "Chennai", "state": "Tamil Nadu", "lat": 13.08268, "lon": 80.270718 },
+    { "city": "Bengaluru", "state": "Karnataka", "lat": 12.971599, "lon": 77.594566 },
+    { "city": "Hyderabad", "state": "Telangana", "lat": 17.385044, "lon": 78.486671 }
+  ]
+  

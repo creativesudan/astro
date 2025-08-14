@@ -1,6 +1,6 @@
 // Charts.jsx
 import React, { useState } from "react";
-import planets from "../../data/planets"; // ✅ import the new component
+import planets from "../../data/planets";// ✅ import the new component
 
 const D1_chart = ({ kundliData }) => {
   const House = ({ index }) => (

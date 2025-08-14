@@ -10,10 +10,10 @@ const LinkRouter = forwardRef(function LinkRouter(itemProps, ref) {
 
   const pages = [
     { label: "Home", path: "/" },
-    { label: "Charts", path: "/charts" },
-    { label: "Learning", path: "/learning" },
+    // { label: "Charts", path: "/charts" },
     { label: "Match Making", path: "/match-making" },
-    { label: "Info", path: "/info" }
+    { label: "Learning", path: "/learning" },
+    // { label: "Info", path: "/info" }
   ];
 
 function Navbar() {
